@@ -1,40 +1,45 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using RentalKendaraan_03.Models.RentalKendaraan.Models;
+
+#nullable disable
 
 namespace RentalKendaraan_03.Models
 {
-    public partial class RentalKendaraanContext : DbContext
+    public partial class RentKendaraanContext : DbContext
     {
-        public RentalKendaraanContext()
+        public RentKendaraanContext()
         {
         }
 
-        public RentalKendaraanContext(DbContextOptions<RentalKendaraanContext> options)
+        public RentKendaraanContext(DbContextOptions<RentKendaraanContext> options)
             : base(options)
         {
         }
 
-        public virtual DbSet<Customer> Customer { get; set; }
-        public virtual DbSet<Gender> Gender { get; set; }
-        public virtual DbSet<Jaminan> Jaminan { get; set; }
-        public virtual DbSet<JenisKendaraan> JenisKendaraan { get; set; }
-        public virtual DbSet<Kendaraan> Kendaraan { get; set; }
-        public virtual DbSet<KondisiKendaraan> KondisiKendaraan { get; set; }
-        public virtual DbSet<Nota> Nota { get; set; }
-        public virtual DbSet<Peminjaman> Peminjaman { get; set; }
-        public virtual DbSet<Pengembalian> Pengembalian { get; set; }
-
+        public virtual DbSet<Customer> Customers { get; set; }
+        public virtual DbSet<Gender> Genders { get; set; }
+        public virtual DbSet<Jaminan> Jaminans { get; set; }
+        public virtual DbSet<JenisKendaraan> JenisKendaraans { get; set; }
+        public virtual DbSet<Kendaraan> Kendaraans { get; set; }
+        public virtual DbSet<KondisiKendaraan> KondisiKendaraans { get; set; }
+        public virtual DbSet<Peminjaman> Peminjamen { get; set; }
+        public virtual DbSet<Pengembalian> Pengembalians { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
+
             modelBuilder.Entity<Customer>(entity =>
             {
                 entity.HasKey(e => e.IdCustomer);
 
+                entity.ToTable("Customer");
+
                 entity.Property(e => e.IdCustomer)
-                    .HasColumnName("ID_Customer")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Customer");
 
                 entity.Property(e => e.Alamat)
                     .HasMaxLength(150)
@@ -43,59 +48,56 @@ namespace RentalKendaraan_03.Models
                 entity.Property(e => e.IdGender).HasColumnName("ID_Gender");
 
                 entity.Property(e => e.NamaCustomer)
-                    .HasColumnName("Nama_Customer")
                     .HasMaxLength(30)
-                    .IsUnicode(false);
+                    .IsUnicode(false)
+                    .HasColumnName("Nama_Customer");
 
                 entity.Property(e => e.Nik)
-                    .HasColumnName("NIK")
                     .HasMaxLength(16)
-                    .IsUnicode(false);
+                    .IsUnicode(false)
+                    .HasColumnName("NIK");
 
                 entity.Property(e => e.NoHp)
-                    .HasColumnName("No_HP")
                     .HasMaxLength(13)
-                    .IsUnicode(false);
+                    .IsUnicode(false)
+                    .HasColumnName("No_HP");
+
+                entity.HasOne(d => d.IdGenderNavigation)
+                    .WithMany(p => Customers)
+                    .HasForeignKey(d => d.IdGender)
+                    .HasConstraintName("FK_Customer_Gender");
             });
 
             modelBuilder.Entity<Gender>(entity =>
             {
                 entity.HasKey(e => e.IdGender);
 
+                entity.ToTable("Gender");
+
                 entity.Property(e => e.IdGender)
-                    .HasColumnName("ID_Gender")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Gender");
 
                 entity.Property(e => e.NamaGender)
-                    .HasColumnName("Nama_Gender")
                     .HasMaxLength(1)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.IdGenderNavigation)
-                    .WithOne(p => p.Gender)
-                    .HasForeignKey<Gender>(d => d.IdGender)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Gender_Customer");
+                    .IsUnicode(false)
+                    .HasColumnName("Nama_Gender");
             });
 
             modelBuilder.Entity<Jaminan>(entity =>
             {
                 entity.HasKey(e => e.IdJaminan);
 
+                entity.ToTable("Jaminan");
+
                 entity.Property(e => e.IdJaminan)
-                    .HasColumnName("ID_Jaminan")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Jaminan");
 
                 entity.Property(e => e.NamaJaminan)
-                    .HasColumnName("Nama_Jaminan")
                     .HasMaxLength(40)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.IdJaminanNavigation)
-                    .WithOne(p => p.Jaminan)
-                    .HasForeignKey<Jaminan>(d => d.IdJaminan)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Jaminan_Peminjaman");
+                    .IsUnicode(false)
+                    .HasColumnName("Nama_Jaminan");
             });
 
             modelBuilder.Entity<JenisKendaraan>(entity =>
@@ -105,22 +107,24 @@ namespace RentalKendaraan_03.Models
                 entity.ToTable("Jenis_Kendaraan");
 
                 entity.Property(e => e.IdJenisKendaraan)
-                    .HasColumnName("ID_Jenis_Kendaraan")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Jenis_Kendaraan");
 
                 entity.Property(e => e.NamaJenisKendaraan)
-                    .HasColumnName("Nama_Jenis_Kendaraan")
                     .HasMaxLength(30)
-                    .IsUnicode(false);
+                    .IsUnicode(false)
+                    .HasColumnName("Nama_Jenis_Kendaraan");
             });
 
             modelBuilder.Entity<Kendaraan>(entity =>
             {
                 entity.HasKey(e => e.IdKendaraan);
 
+                entity.ToTable("Kendaraan");
+
                 entity.Property(e => e.IdKendaraan)
-                    .HasColumnName("ID_Kendaraan")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Kendaraan");
 
                 entity.Property(e => e.IdJenisKendaraan).HasColumnName("ID_Jenis_Kendaraan");
 
@@ -129,31 +133,24 @@ namespace RentalKendaraan_03.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.NamaKendaraan)
-                    .HasColumnName("Nama_Kendaraan")
                     .HasMaxLength(25)
-                    .IsUnicode(false);
+                    .IsUnicode(false)
+                    .HasColumnName("Nama_Kendaraan");
 
                 entity.Property(e => e.NoPolisi)
-                    .HasColumnName("No_Polisi")
                     .HasMaxLength(15)
-                    .IsUnicode(false);
+                    .IsUnicode(false)
+                    .HasColumnName("No_Polisi");
 
                 entity.Property(e => e.NoStnk)
-                    .HasColumnName("No_STNK")
                     .HasMaxLength(8)
-                    .IsUnicode(false);
+                    .IsUnicode(false)
+                    .HasColumnName("No_STNK");
 
-                entity.HasOne(d => d.IdKendaraanNavigation)
-                    .WithOne(p => p.Kendaraan)
-                    .HasForeignKey<Kendaraan>(d => d.IdKendaraan)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                entity.HasOne(d => d.IdJenisKendaraanNavigation)
+                    .WithMany(p => Kendaraans)
+                    .HasForeignKey(d => d.IdJenisKendaraan)
                     .HasConstraintName("FK_Kendaraan_Jenis_Kendaraan");
-
-                entity.HasOne(d => d.IdKendaraan1)
-                    .WithOne(p => p.Kendaraan)
-                    .HasForeignKey<Kendaraan>(d => d.IdKendaraan)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Kendaraan_Peminjaman");
             });
 
             modelBuilder.Entity<KondisiKendaraan>(entity =>
@@ -163,66 +160,24 @@ namespace RentalKendaraan_03.Models
                 entity.ToTable("Kondisi_Kendaraan");
 
                 entity.Property(e => e.IdKondisi)
-                    .HasColumnName("ID_Kondisi")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Kondisi");
 
                 entity.Property(e => e.NamaKondisi)
-                    .HasColumnName("Nama_Kondisi")
                     .HasMaxLength(30)
-                    .IsUnicode(false);
-            });
-
-            modelBuilder.Entity<Nota>(entity =>
-            {
-                entity.HasKey(e => e.KodeTransaksi);
-
-                entity.ToTable("nota");
-
-                entity.Property(e => e.KodeTransaksi)
-                    .HasColumnName("Kode_Transaksi")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.Diskon).HasColumnType("money");
-
-                entity.Property(e => e.HargaBarang)
-                    .HasColumnName("Harga_Barang")
-                    .HasColumnType("money");
-
-                entity.Property(e => e.HargaTotal)
-                    .HasColumnName("Harga_Total")
-                    .HasColumnType("money");
-
-                entity.Property(e => e.JumlahBarang).HasColumnName("Jumlah_Barang");
-
-                entity.Property(e => e.KodeBarang).HasColumnName("Kode_Barang");
-
-                entity.Property(e => e.NamaBarang)
-                    .HasColumnName("Nama_Barang")
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Operator)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Pajak).HasColumnType("money");
-
-                entity.Property(e => e.Pelanggan)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.TanggalTransaksi)
-                    .HasColumnName("Tanggal_Transaksi")
-                    .HasColumnType("date");
+                    .IsUnicode(false)
+                    .HasColumnName("Nama_Kondisi");
             });
 
             modelBuilder.Entity<Peminjaman>(entity =>
             {
-                entity.HasKey(e => e.IdPemimjaman);
+                entity.HasKey(e => e.IdPeminjaman);
 
-                entity.Property(e => e.IdPemimjaman)
-                    .HasColumnName("ID_Pemimjaman")
-                    .ValueGeneratedNever();
+                entity.ToTable("Peminjaman");
+
+                entity.Property(e => e.IdPeminjaman)
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Peminjaman");
 
                 entity.Property(e => e.IdCustomer).HasColumnName("ID_Customer");
 
@@ -230,45 +185,58 @@ namespace RentalKendaraan_03.Models
 
                 entity.Property(e => e.IdKendaraan).HasColumnName("ID_Kendaraan");
 
-                entity.Property(e => e.TglPemimjaman)
-                    .HasColumnName("Tgl_Pemimjaman")
-                    .HasColumnType("datetime");
+                entity.Property(e => e.TglPeminjaman)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Tgl_Peminjaman");
 
-                entity.HasOne(d => d.IdPemimjamanNavigation)
-                    .WithOne(p => p.Peminjaman)
-                    .HasForeignKey<Peminjaman>(d => d.IdPemimjaman)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                entity.HasOne(d => d.IdCustomerNavigation)
+                    .WithMany(p => Peminjamen)
+                    .HasForeignKey(d => d.IdCustomer)
                     .HasConstraintName("FK_Peminjaman_Customer");
+
+                entity.HasOne(d => d.IdJaminanNavigation)
+                    .WithMany(p => Peminjamen)
+                    .HasForeignKey(d => d.IdJaminan)
+                    .HasConstraintName("FK_Peminjaman_Jaminan");
+
+                entity.HasOne(d => d.IdKendaraanNavigation)
+                    .WithMany(p => Peminjamen)
+                    .HasForeignKey(d => d.IdKendaraan)
+                    .HasConstraintName("FK_Peminjaman_Kendaraan");
             });
 
             modelBuilder.Entity<Pengembalian>(entity =>
             {
                 entity.HasKey(e => e.IdPengembalian);
 
+                entity.ToTable("Pengembalian");
+
                 entity.Property(e => e.IdPengembalian)
-                    .HasColumnName("ID_Pengembalian")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedNever()
+                    .HasColumnName("ID_Pengembalian");
 
                 entity.Property(e => e.IdKondisi).HasColumnName("ID_Kondisi");
 
                 entity.Property(e => e.IdPeminjaman).HasColumnName("ID_Peminjaman");
 
                 entity.Property(e => e.TglPengembalian)
-                    .HasColumnName("Tgl_Pengembalian")
-                    .HasColumnType("datetime");
+                    .HasColumnType("datetime")
+                    .HasColumnName("Tgl_Pengembalian");
 
-                entity.HasOne(d => d.IdPengembalianNavigation)
-                    .WithOne(p => p.Pengembalian)
-                    .HasForeignKey<Pengembalian>(d => d.IdPengembalian)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                entity.HasOne(d => d.IdKondisiNavigation)
+                    .WithMany(p => Pengembalians)
+                    .HasForeignKey(d => d.IdKondisi)
                     .HasConstraintName("FK_Pengembalian_Kondisi_Kendaraan");
 
-                entity.HasOne(d => d.IdPengembalian1)
-                    .WithOne(p => p.Pengembalian)
-                    .HasForeignKey<Pengembalian>(d => d.IdPengembalian)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                entity.HasOne(d => d.IdPeminjamanNavigation)
+                    .WithMany(p => Pengembalians)
+                    .HasForeignKey(d => d.IdPeminjaman)
                     .HasConstraintName("FK_Pengembalian_Peminjaman");
             });
+
+            OnModelCreatingPartial(modelBuilder);
         }
+
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

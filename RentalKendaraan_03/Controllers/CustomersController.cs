@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RentalKendaraan_03.Models;
 
-namespace RentalKendaraan_03.Controllers
+namespace RentalKendaraan.Controllers
 {
     public class CustomersController : Controller
     {
-        private readonly RentalKendaraanContext _context;
+        private readonly RentKendaraanContext _context;
 
-        public CustomersController(RentalKendaraanContext context)
+        public CustomersController(RentKendaraanContext context)
         {
             _context = context;
         }
@@ -21,7 +21,8 @@ namespace RentalKendaraan_03.Controllers
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Customer.ToListAsync());
+            var rentKendaraanContext = _context.Customers.Include(c => c.IdGenderNavigation);
+            return View(await rentKendaraanContext.ToListAsync());
         }
 
         // GET: Customers/Details/5
@@ -32,7 +33,8 @@ namespace RentalKendaraan_03.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customer
+            var customer = await _context.Customers
+                .Include(c => c.IdGenderNavigation)
                 .FirstOrDefaultAsync(m => m.IdCustomer == id);
             if (customer == null)
             {
@@ -45,6 +47,7 @@ namespace RentalKendaraan_03.Controllers
         // GET: Customers/Create
         public IActionResult Create()
         {
+            ViewData["IdGender"] = new SelectList(_context.Genders, "IdGender", "IdGender");
             return View();
         }
 
@@ -61,6 +64,7 @@ namespace RentalKendaraan_03.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdGender"] = new SelectList(_context.Genders, "IdGender", "IdGender", customer.IdGender);
             return View(customer);
         }
 
@@ -72,11 +76,12 @@ namespace RentalKendaraan_03.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customer.FindAsync(id);
+            var customer = await _context.Customers.FindAsync(id);
             if (customer == null)
             {
                 return NotFound();
             }
+            ViewData["IdGender"] = new SelectList(_context.Genders, "IdGender", "IdGender", customer.IdGender);
             return View(customer);
         }
 
@@ -112,6 +117,7 @@ namespace RentalKendaraan_03.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["IdGender"] = new SelectList(_context.Genders, "IdGender", "IdGender", customer.IdGender);
             return View(customer);
         }
 
@@ -123,7 +129,8 @@ namespace RentalKendaraan_03.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customer
+            var customer = await _context.Customers
+                .Include(c => c.IdGenderNavigation)
                 .FirstOrDefaultAsync(m => m.IdCustomer == id);
             if (customer == null)
             {
@@ -138,15 +145,15 @@ namespace RentalKendaraan_03.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var customer = await _context.Customer.FindAsync(id);
-            _context.Customer.Remove(customer);
+            var customer = await _context.Customers.FindAsync(id);
+            _context.Customers.Remove(customer);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool CustomerExists(int id)
         {
-            return _context.Customer.Any(e => e.IdCustomer == id);
+            return _context.Customers.Any(e => e.IdCustomer == id);
         }
     }
 }

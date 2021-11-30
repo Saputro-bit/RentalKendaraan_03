@@ -9,5 +9,6 @@ namespace RentalKendaraan_03.Models
         public string NamaGender { get; set; }
 
         public Customer IdGenderNavigation { get; set; }
+        public object Customers { get; internal set; }
     }
 }

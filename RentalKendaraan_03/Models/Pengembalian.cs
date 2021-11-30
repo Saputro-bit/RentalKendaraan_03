@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using RentalKendaraan_03.Models.RentalKendaraan.Models;
 
 namespace RentalKendaraan_03.Models
 {
@@ -13,5 +14,7 @@ namespace RentalKendaraan_03.Models
 
         public Peminjaman IdPengembalian1 { get; set; }
         public KondisiKendaraan IdPengembalianNavigation { get; set; }
+        public object IdKondisiNavigation { get; internal set; }
+        public object IdPeminjamanNavigation { get; internal set; }
     }
 }

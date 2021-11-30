@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using RentalKendaraan_03.Models.RentalKendaraan.Models;
 
 namespace RentalKendaraan_03.Models
 {
